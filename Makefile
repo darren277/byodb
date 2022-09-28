@@ -7,8 +7,9 @@ run: main
 clean:
 	rm -f main *.db
 
-test: main
-	bundle exec rspec
-
 format: *.c
 	clang-format -style=Google -i *.c
+
+
+test:
+	python tests/main.py
