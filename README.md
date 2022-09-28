@@ -22,3 +22,21 @@ The first step in the tutorial is to create a function that accepts user input s
 
 _"Non-SQL statements like .exit are called “meta-commands”. They all start with a dot, so we check for them and handle them in a separate function."_
 
+# Feature Branches
+
+## First Feature Branch: Adding INSERT and SELECT statements
+
+### Accepting and Interpreting Input
+
+First we add our `do_meta_command()` and `prepare_statement()` functions.
+
+We also create our meta command and statement enums.
+
+### Basic Hardcoded Table
+
+Requirements:
+1. Support `insert` and `select` operations.
+2. Adhere to a simple schema.
+
+_"SQLite uses a B-tree for fast lookups, inserts and deletes."_
+
