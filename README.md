@@ -33,4 +33,11 @@ First we add our `do_meta_command()` and `prepare_statement()` functions.
 
 We also create our meta command and statement enums.
 
+### Basic Hardcoded Table
+
+Requirements:
+1. Support `insert` and `select` operations.
+2. Adhere to a simple schema.
+
+_"SQLite uses a B-tree for fast lookups, inserts and deletes."_
 
