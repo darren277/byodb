@@ -155,15 +155,15 @@ PrepareResult prepare_statement(InputBuffer* input_buffer, Statement* statement)
 
 // EXECUTE INSERT FUNCTION
 ExecuteResult execute_insert(Statement* statement, Table* table) {
-  if (table->num_rows >= TABLE_MAX_ROWS) {
-    return EXECUTE_TABLE_FULL;
-  }
+    void* node = get_page(table->pager, table->root_page_num);
+    if ((*leaf_node_num_cells(node) >= LEAF_NODE_MAX_CELLS)) {return EXECUTE_TABLE_FULL;}
 
   Row* row_to_insert = &(statement->row_to_insert);
   Cursor* cursor = table_end(table);
+  
+  leaf_node_insert(cursor, row_to_insert->id, row_to_insert);
 
-  serialize_row(row_to_insert, cursor_value(cursor));
-  table->num_rows += 1;
+  free(cursor);
 
   return EXECUTE_SUCCESS;
 }
@@ -197,12 +197,16 @@ ExecuteResult execute_statement(Statement* statement, Table* table) {
 // DEFINE TABLE
 Table* db_open(const char* filename) {
     Pager* pager = pager_open(filename);
-    uint32_t num_rows = pager->file_length / ROW_SIZE;
-  Table* table = (Table*)malloc(sizeof(Table));
-  table->pager = pager;
-  table->num_rows = num_rows;
-  // for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {table->pages[i] = NULL;}
-  return table;
+    Table* table = (Table*)malloc(sizeof(Table));
+    table->pager = pager;
+    table->root_page_num = 0;
+    // for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {table->pages[i] = NULL;}
+    if (pager->num_pages == 0) {
+        // New database file. Initialize page 0 as leaf node.
+        void* root_node = get_page(pager, 0);
+        initialize_leaf_node(root_node);
+    }
+    return table;
 }
 
 void free_table(Table* table) {
