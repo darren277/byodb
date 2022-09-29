@@ -4,11 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 
-//#include "src/pager.h"
 
-
-
-// DEFINE TABLE
 Table* db_open(const char* filename) {
     Pager* pager = pager_open(filename);
     Table* table = (Table*)malloc(sizeof(Table));
@@ -76,17 +72,14 @@ int main(int argc, char* argv[]) {
       case (PREPARE_STRING_TOO_LONG):
         printf("String is too long.\n");
         continue;
-      // DETECTING SYNTAX ERRORS
       case (PREPARE_SYNTAX_ERROR):
         printf("Syntax error. Could not parse statement.\n");
         continue;
       case (PREPARE_UNRECOGNIZED_STATEMENT):
-        printf("Unrecognized keyword at start of '%s'.\n",
-               input_buffer->buffer);
+        printf("Unrecognized keyword at start of '%s'.\n", input_buffer->buffer);
         continue;
     }
     
-    // EXECUTING STATEMENT
     switch (execute_statement(&statement, table)) {
       case (EXECUTE_SUCCESS):
         printf("Executed.\n");
