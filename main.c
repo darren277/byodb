@@ -146,19 +146,6 @@ Table* db_open(const char* filename) {
     return table;
 }
 
-void free_table(Table* table) {
-    Table* db_open(const char* filename) {
-  Pager* pager = pager_open(filename);
-  uint32_t num_rows = pager->file_length / ROW_SIZE;
-
-  Table* table = malloc(sizeof(Table));
-  table->pager = pager;
-  table->num_rows = num_rows;
-
-  return table;
- }
-}
-
 
 void print_prompt() { printf("db > "); }
 
