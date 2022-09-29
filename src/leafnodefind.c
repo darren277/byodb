@@ -80,3 +80,9 @@ Cursor* internal_node_find(Table* table, uint32_t page_num, uint32_t key) {
       return internal_node_find(table, child_num, key);
   }
 }
+
+
+void update_internal_node_key(void* node, uint32_t old_key, uint32_t new_key) {
+  uint32_t old_child_index = internal_node_find_child(node, old_key);
+  *internal_node_key(node, old_child_index) = new_key;
+}
