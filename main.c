@@ -18,32 +18,7 @@ typedef enum { PREPARE_SUCCESS, PREPARE_STRING_TOO_LONG, PREPARE_SYNTAX_ERROR, P
 typedef enum { STATEMENT_INSERT, STATEMENT_SELECT } StatementType;
 
 
-// IN MEMORY READ/WRITE FOR A ROW
-void* row_slot(Table* table, uint32_t row_num) {
-  uint32_t page_num = row_num / ROWS_PER_PAGE;
-  void* page = get_page(table->pager, page_num);
-  uint32_t row_offset = row_num % ROWS_PER_PAGE;
-  uint32_t byte_offset = row_offset * ROW_SIZE;
-  return page + byte_offset;
-}
 
-
-// SERIALIZE AND DESERIALIZE ROWS
-void print_row(Row* row) {
-  printf("(%d, %s, %s)\n", row->id, row->username, row->email);
-}
-
-void serialize_row(Row* source, void* destination) {
-  memcpy(destination + ID_OFFSET, &(source->id), ID_SIZE);
-  memcpy(destination + USERNAME_OFFSET, &(source->username), USERNAME_SIZE);
-  memcpy(destination + EMAIL_OFFSET, &(source->email), EMAIL_SIZE);
-}
-
-void deserialize_row(void *source, Row* destination) {
-  memcpy(&(destination->id), source + ID_OFFSET, ID_SIZE);
-  memcpy(&(destination->username), source + USERNAME_OFFSET, USERNAME_SIZE);
-  memcpy(&(destination->email), source + EMAIL_OFFSET, EMAIL_SIZE);
-}
 
 typedef struct {
   StatementType type;
@@ -117,25 +92,32 @@ PrepareResult prepare_statement(InputBuffer* input_buffer, Statement* statement)
 
 // EXECUTE INSERT FUNCTION
 ExecuteResult execute_insert(Statement* statement, Table* table) {
-  if (table->num_rows >= TABLE_MAX_ROWS) {
-    return EXECUTE_TABLE_FULL;
-  }
+    void* node = get_page(table->pager, table->root_page_num);
+    if ((*leaf_node_num_cells(node) >= LEAF_NODE_MAX_CELLS)) {return EXECUTE_TABLE_FULL;}
 
   Row* row_to_insert = &(statement->row_to_insert);
+  Cursor* cursor = table_end(table);
+  
+  leaf_node_insert(cursor, row_to_insert->id, row_to_insert);
 
-  serialize_row(row_to_insert, row_slot(table, table->num_rows));
-  table->num_rows += 1;
+  free(cursor);
 
   return EXECUTE_SUCCESS;
 }
 
 // EXECUTE SELECT FUNCTION
 ExecuteResult execute_select(Statement* statement, Table* table) {
+  Cursor* cursor = table_start(table);
   Row row;
-  for (uint32_t i = 0; i < table->num_rows; i++) {
-    deserialize_row(row_slot(table, i), &row);
-    print_row(&row);
-  }
+
+  while (!(cursor->end_of_table)) {
+     deserialize_row(cursor_value(cursor), &row);
+     print_row(&row);
+     cursor_advance(cursor);
+   }
+
+  free(cursor);
+  
   return EXECUTE_SUCCESS;
 }
 
@@ -152,25 +134,16 @@ ExecuteResult execute_statement(Statement* statement, Table* table) {
 // DEFINE TABLE
 Table* db_open(const char* filename) {
     Pager* pager = pager_open(filename);
-    uint32_t num_rows = pager->file_length / ROW_SIZE;
-  Table* table = (Table*)malloc(sizeof(Table));
-  table->pager = pager;
-  table->num_rows = num_rows;
-  // for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {table->pages[i] = NULL;}
-  return table;
-}
-
-void free_table(Table* table) {
-    Table* db_open(const char* filename) {
-  Pager* pager = pager_open(filename);
-  uint32_t num_rows = pager->file_length / ROW_SIZE;
-
-  Table* table = malloc(sizeof(Table));
-  table->pager = pager;
-  table->num_rows = num_rows;
-
-  return table;
- }
+    Table* table = (Table*)malloc(sizeof(Table));
+    table->pager = pager;
+    table->root_page_num = 0;
+    // for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {table->pages[i] = NULL;}
+    if (pager->num_pages == 0) {
+        // New database file. Initialize page 0 as leaf node.
+        void* root_node = get_page(pager, 0);
+        initialize_leaf_node(root_node);
+    }
+    return table;
 }
 
 

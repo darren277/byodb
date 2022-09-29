@@ -1,6 +1,8 @@
 import os
 import sys
 
+file_order = ['consts.c', 'btree.c', 'pager.c', 'rows.c', 'cursor.c', 'leafnodeops.c']
+
 
 class CFile:
     def __init__(self, lines):
@@ -15,7 +17,7 @@ class CFile:
 
 class Main:
     def __init__(self):
-        self.included_files = [CFile(open('src/'+file, 'r').readlines()) for file in os.listdir('src') if file.endswith('.c')]
+        self.included_files = [CFile(open('src/'+file, 'r').readlines()) for file in file_order]
         self.main_file = open('main.c', 'r').readlines()
 
         self.includes = []
