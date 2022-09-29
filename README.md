@@ -60,3 +60,5 @@ The next step will be to add search functionality.
 ## Fourth Feature Branch: Implementing Binary Search for Our B-Tree
 
 Added `table_find()` function which calls another new function called `leaf_node_find()` to perform a binary search on our B-Tree.
+
+Added leaf node splitting functionality to create internal nodes. Also added root creation and tracking functions.
