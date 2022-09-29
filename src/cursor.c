@@ -1,6 +1,5 @@
 
 
-// UPDATED ROW_SLOT FUNCTION TO USE CURSOR
 Cursor* table_start(Table* table) {
     Cursor* cursor = malloc(sizeof(Cursor));
     cursor->table = table;

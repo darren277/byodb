@@ -1,4 +1,4 @@
-// EXECUTE INSERT FUNCTION
+
 ExecuteResult execute_insert(Statement* statement, Table* table) {
     void* node = get_page(table->pager, table->root_page_num);
     if ((*leaf_node_num_cells(node) >= LEAF_NODE_MAX_CELLS)) {return EXECUTE_TABLE_FULL;}
@@ -13,7 +13,6 @@ ExecuteResult execute_insert(Statement* statement, Table* table) {
   return EXECUTE_SUCCESS;
 }
 
-// EXECUTE SELECT FUNCTION
 ExecuteResult execute_select(Statement* statement, Table* table) {
   Cursor* cursor = table_start(table);
   Row row;
