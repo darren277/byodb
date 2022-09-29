@@ -56,3 +56,17 @@ The basic insertion functionality for our B-Tree has been implemented.
 
 The next step will be to add search functionality.
 
+
+## Fourth Feature Branch: Implementing Binary Search for Our B-Tree
+
+Added `table_find()` function which calls another new function called `leaf_node_find()` to perform a binary search on our B-Tree.
+
+Added leaf node splitting functionality to create internal nodes. Also added root creation and tracking functions.
+
+Search functionality was extended by incorporating recursive search of our B-Tree.
+
+
+**NOTE TO SELF**:
+Regarding how we jump from leaf node to leaf node during longer scans:
+_"To scan the entire table, we need to jump to the second leaf node after we reach the end of the first. To do that, we’re going to save a new field in the leaf node header called “next_leaf”, which will hold the page number of the leaf’s sibling node on the right. The rightmost leaf node will have a next_leaf value of 0 to denote no sibling (page 0 is reserved for the root node of the table anyway)."_
+

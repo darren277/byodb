@@ -1,7 +1,7 @@
 import os
 import sys
 
-file_order = ['consts.c', 'btree.c', 'pager.c', 'rows.c', 'cursor.c', 'leafnodeops.c']
+file_order = ['consts.c', 'btree.c', 'pager.c', 'rows.c', 'leafnodefind.c', 'cursor.c', 'leafnodeops.c', 'inputbuffer.c', 'querying/prepare.c', 'querying/execute.c']
 
 
 class CFile:
