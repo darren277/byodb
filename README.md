@@ -47,3 +47,12 @@ Converted in memory table data structure to a hard disk memory pager that writes
 
 **DEV NOTE**: I started trying to separate functionality from the main c file. I ended up going down a long rabbit hole about the history and use of header files for compiling from multiple file sources. I also encountered some duplicate imports while trying to compile. For now, rather then be bogged down with these constraints I just wrote a simple Python script for merging separate c files into one right before compilation. See `make main` and the `utils.py` file.
 
+
+## Third Feature Branch: Cursor and B-Tree
+
+We will now need a cursor in order to traverse the rows in our tables.
+
+The basic insertion functionality for our B-Tree has been implemented.
+
+The next step will be to add search functionality.
+
