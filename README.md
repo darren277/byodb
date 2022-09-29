@@ -56,3 +56,7 @@ The basic insertion functionality for our B-Tree has been implemented.
 
 The next step will be to add search functionality.
 
+
+## Fourth Feature Branch: Implementing Binary Search for Our B-Tree
+
+Added `table_find()` function which calls another new function called `leaf_node_find()` to perform a binary search on our B-Tree.
