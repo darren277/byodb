@@ -1,7 +1,5 @@
 
 import subprocess
-import pexpect
-from pexpect import popen_spawn
 
 def test_main():
     p = subprocess.Popen(['./main', 'mydb.db'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
