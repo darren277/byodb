@@ -22,7 +22,7 @@ The first step in the tutorial is to create a function that accepts user input s
 
 _"Non-SQL statements like .exit are called “meta-commands”. They all start with a dot, so we check for them and handle them in a separate function."_
 
-# Feature Branches
+# Feature Branches (From Tutorial)
 
 ## First Feature Branch: Adding INSERT and SELECT statements
 
@@ -69,4 +69,16 @@ Search functionality was extended by incorporating recursive search of our B-Tre
 **NOTE TO SELF**:
 Regarding how we jump from leaf node to leaf node during longer scans:
 _"To scan the entire table, we need to jump to the second leaf node after we reach the end of the first. To do that, we’re going to save a new field in the leaf node header called “next_leaf”, which will hold the page number of the leaf’s sibling node on the right. The rightmost leaf node will have a next_leaf value of 0 to denote no sibling (page 0 is reserved for the root node of the table anyway)."_
+
+
+# Next Steps
+
+There are definitely some ways in which I want to expand on this project:
+1. One is that I need more tests. Maybe I'll implement some coverage checks to make quantify progress along that dimension.
+2. Create some kind of network accessible server for it so that I can build it and run it on remote servers and access it with a URI string.
+3. Add a user system along with password authentication.
+4. Elaborate significantly on the querying languge.
+
+
+# Feature Branches (My Own)
 
