@@ -1,5 +1,26 @@
 
-ExecuteResult execute_insert(Statement* statement, Table* table) {
+char* concat(const char *s1, const char *s2)
+{
+    const char *joiner;
+    joiner = "-";
+
+    const char *fileext;
+    fileext = ".db";
+
+    char *result = malloc(strlen(s1) + 1 + strlen(s2) + 3 + 1); // +1 for the null-terminator
+    // in real code you would check for errors in malloc here
+    strcpy(result, s1);
+    strcat(result, joiner);
+    strcat(result, s2);
+    strcat(result, fileext);
+    return result;
+}
+
+ExecuteResult execute_insert(Statement* statement, char* database) {
+  char* filename = concat(database, statement->table_name);
+  Table* table = db_open(filename);
+  free(filename);
+
   void* node = get_page(table->pager, table->root_page_num);
   uint32_t num_cells = (*leaf_node_num_cells(node));
 
@@ -16,10 +37,18 @@ ExecuteResult execute_insert(Statement* statement, Table* table) {
 
   free(cursor);
 
+  db_close(table);
+
   return EXECUTE_SUCCESS;
 }
 
-ExecuteResult execute_select(Statement* statement, Table* table) {
+ExecuteResult execute_select(Statement* statement, char* database) {
+  // extract table name from statement
+  char* filename = concat(database, statement->table_name);
+  printf("filename: %s\n", filename);
+  Table* table = db_open(filename);
+  //free(filename);
+
   Cursor* cursor = table_start(table);
   Row row;
 
@@ -30,16 +59,18 @@ ExecuteResult execute_select(Statement* statement, Table* table) {
    }
 
   free(cursor);
+
+  db_close(table);
   
   return EXECUTE_SUCCESS;
 }
 
-ExecuteResult execute_statement(Statement* statement, Table* table) {
+ExecuteResult execute_statement(Statement* statement, char* database) {
   switch (statement->type) {
     case (STATEMENT_INSERT):
-        return execute_insert(statement, table);
+        return execute_insert(statement, database);
     case (STATEMENT_SELECT):
-        return execute_select(statement, table);
+        return execute_select(statement, database);
   }
 }
 

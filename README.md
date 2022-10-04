@@ -82,3 +82,32 @@ There are definitely some ways in which I want to expand on this project:
 
 # Feature Branches (My Own)
 
+## Multiple Tables (and Databases)
+
+Got not only multiple tables working but also multiple databases.
+
+Added INTO and FROM clauses to query language.
+
+Note that the current file structure is as follows:
+`{DATABASE_NAME}-{TABLE_NAME}.db`
+Ex: `mydb-mytable.db`.
+
+Example:
+```
+./main mydb
+
+db > insert 1 hello hi INTO mytable
+
+db > insert 2 hello2 hi2 INTO mytable2
+
+db > select FROM mytable
+(1, hello, hi)
+
+db > select FROM mytable2
+(2, hello2, hi2)
+```
+
+File names:
+`mydb-mytable.db`
+`mydb-mytable2.db`
+
