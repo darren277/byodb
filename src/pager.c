@@ -96,8 +96,26 @@ void pager_flush(Pager* pager, uint32_t page_num) {
 }
 
 
+Table* db_open(const char* filename) {
+    Pager* pager = pager_open(filename);
+    Table* table = (Table*)malloc(sizeof(Table));
+    table->pager = pager;
+    table->root_page_num = 0;
+    // for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {table->pages[i] = NULL;}
+    if (pager->num_pages == 0) {
+        // New database file. Initialize page 0 as leaf node.
+        void* root_node = get_page(pager, 0);
+        initialize_leaf_node(root_node);
+        set_node_root(root_node, true);
+    }
+    return table;
+}
+
+
 void db_close(Table* table) {
   Pager* pager = table->pager;
+
+  printf("Writing to disk.\n");
 
   for (uint32_t i = 0; i < pager->num_pages; i++) {
     if (pager->pages[i] == NULL) {

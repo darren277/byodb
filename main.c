@@ -5,27 +5,11 @@
 #include <stdint.h>
 
 
-Table* db_open(const char* filename) {
-    Pager* pager = pager_open(filename);
-    Table* table = (Table*)malloc(sizeof(Table));
-    table->pager = pager;
-    table->root_page_num = 0;
-    // for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {table->pages[i] = NULL;}
-    if (pager->num_pages == 0) {
-        // New database file. Initialize page 0 as leaf node.
-        void* root_node = get_page(pager, 0);
-        initialize_leaf_node(root_node);
-        set_node_root(root_node, true);
-    }
-    return table;
-}
-
 
 void print_prompt() { printf("db > "); }
 
 void read_input(InputBuffer* input_buffer) {
-  ssize_t bytes_read =
-      getline(&(input_buffer->buffer), &(input_buffer->buffer_length), stdin);
+  ssize_t bytes_read = getline(&(input_buffer->buffer), &(input_buffer->buffer_length), stdin);
 
   if (bytes_read <= 0) {
     printf("Error reading input\n");
@@ -43,13 +27,8 @@ void close_input_buffer(InputBuffer* input_buffer) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        printf("Must supply a database filename.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    char* filename = argv[1];
-    Table* table = db_open(filename);
+    if (argc < 2) {printf("Must supply a database directory name.\n"); exit(EXIT_FAILURE);}
+    char* database = argv[1];
 
   InputBuffer* input_buffer = new_input_buffer();
   while (true) {
@@ -57,7 +36,7 @@ int main(int argc, char* argv[]) {
     read_input(input_buffer);
 
     if (input_buffer->buffer[0] == '.') {
-        switch (do_meta_command(input_buffer, table)) {
+        switch (do_meta_command(input_buffer, database)) {
             case (META_COMMAND_SUCCESS):
                 continue;
             case (META_COMMAND_UNRECOGNIZED_COMMAND):
@@ -81,7 +60,7 @@ int main(int argc, char* argv[]) {
         continue;
     }
     
-    switch (execute_statement(&statement, table)) {
+    switch (execute_statement(&statement, database)) {
       case (EXECUTE_SUCCESS):
         printf("Executed.\n");
         break;
